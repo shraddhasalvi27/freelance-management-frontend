@@ -9,8 +9,8 @@ const freelancerSchema = new Schema(
     gender: { type: String },
     email: { type: String, lowercase: true, unique: true },
     mobile: { type: String },
-    profileImage: { type: String }, // Path to the uploaded profile image
-    skills: [{ type: String }], // Array of skill strings
+    profileImage: { type: String }, 
+    skills: [{ type: String }], 
     hourlyRate: { type: Number, min: 0 },
     bio: { type: String },
     experience: { type: Number, min: 0 }, // Years of experience
@@ -39,7 +39,7 @@ const freelancerSchema = new Schema(
         }
       }
     ],
-      name: { type: String },
+  name: { type: String },
   position: { type: String },
   experience: { type: String },
   location: { type: String },
@@ -58,6 +58,7 @@ const freelancerSchema = new Schema(
       name: { type: String },
       position: { type: String },
       opinion: { type: String },
+      image:{type: String}
     },
   ],
 

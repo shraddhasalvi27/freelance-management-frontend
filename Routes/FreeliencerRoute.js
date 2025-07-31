@@ -34,7 +34,7 @@ const router = express.Router();
 router.post('/register', registerFreelancer);
 router.post('/login', loginFreelancer);
 router.get('/singlefreelancer/:freelancerId', getFreelancer);
-router.put('/updatefreelancers/:freelancerId',   uploadProfileImg, updateFreelancer);
+router.put('/updatefreelancers/:freelancerId',uploadProfileImg, updateFreelancer);
 // CREATE a client by a freelancer
 router.post('/createclient/:freelancerId', createClient);
 router.get('/getclients/:freelancerId', getClientsByFreelancer);

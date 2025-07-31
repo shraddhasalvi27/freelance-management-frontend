@@ -2,9 +2,10 @@ import multer from 'multer';
 import path from 'path';
 
 const storage = multer.memoryStorage();
-const uploadProfileImg = multer({
+// Accept profileImage and multiple testimonial images
+const uploadImg = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, 
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png/;
     const mimetype = filetypes.test(file.mimetype);
@@ -15,6 +16,11 @@ const uploadProfileImg = multer({
       cb(new Error('Only image files are allowed (jpg, jpeg, png).'));
     }
   }
-}).single('profileImage'); 
+});
 
-export default uploadProfileImg;
+// Export field-wise multer setup
+export const uploadFreelancerMedia = uploadImg.fields([
+  { name: 'profileImage', maxCount: 1 },
+  { name: 'image', maxCount: 5 }, // Adjust count as needed
+]);
+

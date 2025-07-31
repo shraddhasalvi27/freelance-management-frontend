@@ -26,15 +26,16 @@ import { createClient,
     updateProposal,
     deleteProposal,
     deleteProject} from '../Controller/FreeliencerController.js';
-    import uploadProfileImg from '../config/uploadConfig.js';
+    import { uploadFreelancerMedia } from '../config/uploadConfig.js';
 
 const router = express.Router();
 
-// POST /api/freelancers/register
+// POST /api/freelancers/register   - done testing
 router.post('/register', registerFreelancer);
 router.post('/login', loginFreelancer);
 router.get('/singlefreelancer/:freelancerId', getFreelancer);
-router.put('/updatefreelancers/:freelancerId',uploadProfileImg, updateFreelancer);
+router.put('/updatefreelancers/:freelancerId',uploadFreelancerMedia, updateFreelancer);
+
 // CREATE a client by a freelancer
 router.post('/createclient/:freelancerId', createClient);
 router.get('/getclients/:freelancerId', getClientsByFreelancer);

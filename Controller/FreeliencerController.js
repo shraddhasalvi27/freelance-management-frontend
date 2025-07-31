@@ -147,6 +147,8 @@ export const getFreelancer = async (req, res) => {
   }
 };
 
+
+
 export const updateFreelancer = async (req, res) => {
   try {
     const freelancerId = req.params.freelancerId;
@@ -156,7 +158,6 @@ export const updateFreelancer = async (req, res) => {
       return res.status(404).json({ message: "Freelancer not found!" });
     }
 
-    // Destructure body fields
     const {
       name,
       position,
@@ -167,13 +168,11 @@ export const updateFreelancer = async (req, res) => {
       twitter,
       skills,
       services,
-      testimonials,
       about,
       faq,
-      latestWork,
+      latestWork
     } = req.body;
 
-    // Update text fields if present
     if (name) freelancer.name = name;
     if (position) freelancer.position = position;
     if (experience) freelancer.experience = experience;
@@ -183,28 +182,74 @@ export const updateFreelancer = async (req, res) => {
     if (twitter) freelancer.twitter = twitter;
     if (skills) freelancer.skills = skills;
     if (services) freelancer.services = services;
-    if (testimonials) freelancer.testimonials = testimonials;
     if (about) freelancer.about = about;
     if (faq) freelancer.faq = faq;
     if (latestWork) freelancer.latestWork = latestWork;
+    // if (testimonials) freelancer.testimonials = testimonials;
 
-    // Handle image upload if file exists
-    if (req.file) {
+    // Upload profile image if present
+    if (req.files?.profileImage?.[0]) {
       const uploadResult = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: "freelancer_profiles",
-          },
+          { folder: 'freelancer_profiles' },
           (error, result) => {
             if (error) reject(error);
             else resolve(result);
           }
         );
-        uploadStream.end(req.file.buffer);
+        uploadStream.end(req.files.profileImage[0].buffer);
       });
-
       freelancer.profileImage = uploadResult.secure_url;
     }
+    
+    //upload testimonials
+    const uploadToCloudinary = (file) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: 'freelancer_testimonials' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    uploadStream.end(file.buffer);
+  });
+};
+
+const testimonials = [];
+
+const toArray = (val) => (Array.isArray(val) ? val : [val]);
+
+const names = toArray(req.body.testimonialName);
+const positions = toArray(req.body.testimonialPosition);
+const opinions = toArray(req.body.testimonialOpinion);
+const files = req.files?.image || [];
+
+for (let i = 0; i < names.length; i++) {
+  const name = names[i];
+  const position = positions[i];
+  const opinion = opinions[i];
+  const imageFile = files[i];
+
+  let uploadedImageUrl = '';
+
+  if (imageFile) {
+    const uploadResult = await uploadToCloudinary(imageFile);
+    uploadedImageUrl = uploadResult.secure_url;
+  }
+
+  testimonials.push({
+    name,
+    position,
+    opinion,
+    image: uploadedImageUrl
+  });
+}
+
+// Now save to DB
+freelancer.testimonials = testimonials;
+await freelancer.save();
+
 
     await freelancer.save();
 
@@ -217,6 +262,7 @@ export const updateFreelancer = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const createProject = async (req, res) => {
   const { freelancerId } = req.params;
